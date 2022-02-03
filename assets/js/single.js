@@ -3,11 +3,18 @@ var issueContainerEl = document.querySelector("#issues-container");
 var limitWarningEl = document.querySelector("#limit-warning");
 
 var getRepoName = function () {
+  //grab repo name from url query string
   var queryString = document.location.search;
   var repoName = queryString.split("=")[1];
 
-  getRepoIssues(repoName);
-  repoNameEl.textContent = repoName;
+  if (repoName) {
+    //display repo name on the page
+    repoNameEl.textContent = repoName;
+    getRepoIssues(repoName);
+  } else {
+    //if no repo was given, redirect to the homepage
+    document.location.replace("./index.html");
+  }
 };
 
 var getRepoIssues = function (repo) {
@@ -22,12 +29,14 @@ var getRepoIssues = function (repo) {
 
         //check if api has paginated issues
         if (response.headers.get("Link")) {
-          console.log("This repository has more than 30 issues.");
           displayWarning(repo);
         }
       });
     } else {
-      alert("There was a problem with your request!");
+      alert(
+        "There was a problem communicating with the Github API, redirecting you back to the homepage."
+      );
+      document.location.replace("./index.html");
     }
   });
 };
